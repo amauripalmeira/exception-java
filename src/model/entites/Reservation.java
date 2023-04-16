@@ -5,6 +5,8 @@ import java.time.zone.ZoneOffsetTransitionRule.TimeDefinition;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.domainException;
+
 public class Reservation {
 
 	private Integer roomNumber;
@@ -13,7 +15,10 @@ public class Reservation {
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-	public Reservation(Integer rumNumber, Date chekinIn, Date checkout) {
+	public Reservation(Integer rumNumber, Date chekinIn, Date checkout)  {
+		if (!checkout.after(checkIn)) {
+			throw new domainException(" : checkout date must be after checkin date  " );
+		}
 		this.roomNumber = rumNumber;
 		this.checkIn = chekinIn;
 		this.checkout = checkout;
@@ -41,20 +46,20 @@ public class Reservation {
 		return TimeUnit.DAYS.convert(dff, TimeUnit.MILLISECONDS);
 	}
 
-	public String  updateDates(Date checkIn, Date checkout) {
+	public void   updateDates(Date checkIn, Date checkout) {
 		
 		Date now = new Date();
 
 		if (checkIn.before(now) || checkout.before(now)) {
-			return " : reservation dates for update must be futures date ";
+			throw new domainException( " : reservation dates for update must be futures date " );
 		}
-		else if (!checkout.after(checkIn)) {
-			return " : checkout date must be after checkin date  ";
+		if (!checkout.after(checkIn)) {
+			throw new domainException(" : checkout date must be after checkin date  " );
 		}
 		this.checkIn = checkIn;
 		this.checkout = checkout;
 		
-		return null ;
+		
 	}
 
 	@Override
